@@ -16,6 +16,9 @@ function NavBar({ user, handleLogout }: NavBarProps) {
         <li>
           <Link to="/recipes">Recipes</Link>
         </li>
+        <li>
+          <Link to="/generate">Generate</Link>
+        </li>
         {user ? (
           <>
             <li>
