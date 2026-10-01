@@ -16,6 +16,8 @@ services:
       - JWT_SECRET=my secret string
       - MONGO_URL=mongodb://mongo:27017/deloitte
       - PORT=3000
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_API_URL=${GEMINI_API_URL}
     ports: ["3000:3000"]
     volumes:
       - ./:/usr/src/app # bind-mount source

@@ -1,21 +1,15 @@
-const API_URL = import.meta.env.VITE_API_URL;
-const API_KEY = import.meta.env.VITE_API_KEY;
+const API_URL = `${import.meta.env.VITE_BACKEND_URL}/api/ai`;
 
-// Streams a recipe from Gemini. Calls onChunk with each new piece of text as it arrives.
+// Streams a recipe from the backend (which proxies to Gemini).
+// Calls onChunk with each new piece of text as it arrives.
 export async function streamRecipe(
   prompt: string,
   onChunk: (text: string) => void,
 ): Promise<void> {
- const url = `${API_URL}?alt=sse&key=${API_KEY}`;
-
-  
-
-  const res = await fetch(url, {
+  const res = await fetch(API_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-    }),
+    body: JSON.stringify({ prompt }),
   });
 
   if (!res.ok) {
