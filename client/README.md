@@ -1,56 +1,53 @@
 # Client
 
-This directory contains the client-side code for the Spoonful application.
+Client-side code for the Spoonful application: React + TypeScript (Vite).
 
 ## Commands
 
 ### Running the Development Server
 
-To start the development server, run the following command. This will build the Docker image and start the container
+Build the image and start the dev container:
 
 ```bash
-docker-compose up --build 
+docker compose up --build
 ```
 
-if you have trouble getting node modules to update after you install something, rebuild with no-cache
+If node modules don't update after installing a package, rebuild without cache:
 
-```
-docker-compose up --build --force-recreate
+```bash
+docker compose up --build --force-recreate
 ```
 
-To list all the docker containers running
+List running containers:
 
-```
+```bash
 sudo docker ps -a
 ```
 
-To remove a container 
-
-```
-sudo docker rm <container_id> <--- note container ID can be retrieve from the command above, will look something like 2781e82e591f
-```
-
-or remove all the stopped ones
-
-```
-sudo docker container prune 
-```
-### Running Tests
-
-To run the test suite, use the following command:
+Remove a container (ID from the command above, e.g. `2781e82e591f`):
 
 ```bash
-docker-compose run --rm react-dev npm run test
+sudo docker rm <container_id>
 ```
 
-**When to use:** Use this command to execute the unit and integration tests for the client application. The `--rm` flag will remove the container after the tests have run.
+Remove all stopped containers:
+
+```bash
+sudo docker container prune
+```
+
+### Running Tests
+
+```bash
+docker compose run --rm react-dev npm run test
+```
+
+**When to use:** To run the unit/integration tests (Vitest + React Testing Library). The `--rm` flag removes the container after the run.
 
 ### Building for Production
 
-To create a production build of the application, run the following command:
-
 ```bash
-docker-compose run --rm react-dev npm run build
+docker compose run --rm react-dev npm run build
 ```
 
-**When to use:** Run this before deploying — it's also the command your deploy script runs. The build artifacts land in the `dist` directory, which is exactly what gets synced to S3. See the root [README.md](../README.md) → **Step 5: Deploy to S3** for the deployment pipeline itself.
+**When to use:** Before deploying — this is also what the deploy script runs. Build artifacts land in `dist/`, which is what gets synced to S3. `dist/` is a build output and is gitignored (not committed). See the root [README.md](../README.md) → **Step 5: Deploy to S3** for the deployment pipeline.
