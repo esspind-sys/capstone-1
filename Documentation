@@ -1,0 +1,4 @@
+Link:http://recipe-app-capstone-4821.s3-website.us-east-1.amazonaws.com/
+Spoonful — Recipe Manager
+Spoonful is a full-stack recipe app where users sign up, log in, and create, view, edit, and delete their own recipes (with ingredients, instructions, tags, and images), plus search their recipe library. It also features an AI recipe generator that writes a complete recipe from a single dish name.
+Stack: React + TypeScript (Vite) frontend, Node/Express REST API with JWT auth, MongoDB (Mongoose), and Google Gemini for AI — called only through the backend so the API key stays private. Containerized with Docker; the frontend is deployed to AWS S3 via an automated GitHub Actions CI/CD pipeline on every push to main.
