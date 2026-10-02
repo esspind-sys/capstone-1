@@ -64,6 +64,32 @@ docker container prune
 
 ## Deployment
 
-The backend, database, and local dev workflow described above stay as-is — you still develop and grade against `docker-compose -f docker-compose.dev.yml up --build`. What changes: your **React frontend** gets built and deployed as a static site to Amazon S3, and it's configured at build time to call this backend at whatever address it's reachable from (your machine's local network, a tunnel like ngrok, or a small always-on host if you have one — the backend itself does not need to move to AWS for this capstone).
+**Frontend:** React (Vite) static build deployed to AWS S3.
+- Bucket: `recipe-app-capstone-4821`
+- Build & deploy: `npm run build && aws s3 sync dist/ s3://recipe-app-capstone-4821 --delete`
+- Backend URL is injected at build time via `client/.env.production` (`VITE_BACKEND_URL`).
+
+**Backend:** Node/Express + MongoDB in Docker on AWS EC2.
+- Start: `docker compose -f docker-compose.dev.yml up -d`
+
+### Why a Cloudflare tunnel
+The backend listens on plain HTTP on port 3000. Reaching it directly
+(`http://<ec2-ip>:3000`) works on some networks but is blocked by others —
+corporate proxies and VPNs commonly block browser requests to a raw IP on a
+non-standard port. (Confirmed: reachable on office wifi, blocked over a home VPN;
+`curl` succeeded on both, but browser requests were reset.)
+
+To make the backend reachable over HTTPS from any network, it is exposed via a
+Cloudflare quick tunnel, run in the background on the EC2 instance:
+
+    nohup ./cloudflared tunnel --url http://localhost:3000 > ~/tunnel.log 2>&1 &
+    grep -o 'https://[a-z0-9-]*\.trycloudflare\.com' ~/tunnel.log   # read the URL
+
+The frontend points at the tunnel URL via `client/.env.production`:
+
+    VITE_BACKEND_URL=https://ada-protocol-invention-office.trycloudflare.com
+
+**Note:** quick-tunnel URLs are temporary and change whenever `cloudflared`
+restarts. When the URL changes, update `.env.production` and redeploy the frontend.
 
 See the root [README.md](../README.md) → **Step 5: Deploy to S3** for the full deployment pipeline.
