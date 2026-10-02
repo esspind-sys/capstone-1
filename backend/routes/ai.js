@@ -14,8 +14,7 @@ router.post("/", async (req, res) => {
   // Abort the upstream call on timeout OR if the client disconnects.
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort("timeout"), GEMINI_TIMEOUT_MS);
-  req.on("close", () => controller.abort("client-disconnect"));
-
+res.on("close", () => { if (!res.writableEnded) controller.abort("client-disconnect"); });
   let streaming = false;
 
   try {
