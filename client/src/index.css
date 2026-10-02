@@ -1,68 +1,138 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  /* --- Brand / semantic colors (LIGHT) --- */
+  --color-bg:        #FFF7E6;  /* cream */
+  --color-surface:   #FFFFFF;  /* ASSUMED: card/panel bg on cream */
+  --color-text:      #1B1B1B;
+  --color-text-muted:#5C5C57;  /* ASSUMED: secondary text (dates, hints) */
+  --color-primary:   #6BA539;  /* green */
+  --color-primary-hover:#5C9230;/* ASSUMED: darker green for :hover */
+  --color-border:    #E8DEC4;  /* ASSUMED: warm border on cream */
+  --color-tag-bg:    #FBEABF;
+  --color-tag-text:  #866208;
+  --color-success:   #6BA539;  /* reuse green */
+  --color-error:     #C62828;  /* light-mode red (confirmed) */
+
+  /* --- Typography --- */
+  --font-body: "Open Sans", system-ui, Helvetica, Arial, sans-serif;
+  --font-heading: "Open Sans", system-ui, Helvetica, Arial, sans-serif;
+  --fw-regular: 400;
+  --fw-bold: 700;
+  --fs-body: 18px;
+  --fs-h1: 40px;
+  --fs-h2: 30px;   /* ASSUMED scale */
+  --fs-h3: 24px;   /* ASSUMED scale */
+  --fs-small: 14px;/* ASSUMED scale */
+  --lh-body: 1.5;
+  --lh-heading: 1.15;
+
+  /* --- Spacing scale (ASSUMED 4px base — adjust to Figma) --- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* --- Radius (ASSUMED — cards are clearly rounded) --- */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 2px 8px rgba(27, 27, 27, 0.08);
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+/* --- Dark theme overrides --- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg:        #242424;
+    --color-surface:   #2F2F2F;  /* ASSUMED: card bg on black */
+    --color-text:      #FFFFFF;
+    --color-text-muted:#B5B5B5;  /* ASSUMED */
+    --color-primary:   #DAECCA;  /* light green */
+    --color-primary-hover:#C4DFAD;/* ASSUMED */
+    --color-border:    #3D3D3D;  /* ASSUMED */
+    --color-tag-bg:    #866208;   /* inverted — confirm */
+    --color-tag-text:  #FBEABF;   /* inverted — confirm */
+    --color-success:   #DAECCA;
+    --color-error:     #F2BCBC;   /* given */
+  }
+
+  /* Dark-mode button text: flip to dark-on-green for contrast
+     (white on light-green #DAECCA was nearly invisible). */
+  button { color: var(--color-bg); }
 }
-a:hover {
-  color: #535bf2;
-}
+
+/* ============================================================
+   BASE RESET + ELEMENT DEFAULTS
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  /* NOTE: removed Vite's `display:flex; place-items:center`
+     — it centered the entire app. A recipe app lays out top-down. */
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-heading);
+  color: var(--color-text);
+  margin: 0 0 var(--space-4);
 }
+h1 { font-size: var(--fs-h1); }
+h2 { font-size: var(--fs-h2); }
+h3 { font-size: var(--fs-h3); }
+
+p { margin: 0 0 var(--space-4); }
+
+a {
+  color: var(--color-primary);
+  font-weight: var(--fw-bold);
+  text-decoration: none;
+}
+a:hover { color: var(--color-primary-hover); text-decoration: underline; }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  font-size: var(--fs-body);
+  font-weight: var(--fw-bold);
+  color: #fff;
+  background-color: var(--color-primary);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-5);
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
+button:hover { background-color: var(--color-primary-hover); }
+button:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+input, textarea, select {
+  font-family: inherit;
+  font-size: var(--fs-body);
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
+}
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--color-primary);
 }

@@ -1,0 +1,105 @@
+.new-recipe-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5);
+}
+
+.new-recipe__title { margin-bottom: var(--space-5); }
+
+.new-recipe__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* --- Shared field + label --- */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.field__label {
+  font-size: var(--fs-small);
+  font-weight: var(--fw-bold);
+}
+.field input,
+.field textarea {
+  width: 100%;
+}
+
+.new-recipe__preview {
+  margin-top: var(--space-2);
+  max-width: 240px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+/* --- Ingredient / instruction sections --- */
+.new-recipe__section {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+}
+.new-recipe__section h3 {
+  margin-top: 0;
+  margin-bottom: var(--space-4);
+}
+
+/* --- Dynamic rows --- */
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+.row--ingredient .row__name { flex: 2; }
+.row--ingredient .row__qty { flex: 1; }
+.row--instruction .row__desc { flex: 1; }
+
+.row__step {
+  flex-shrink: 0;
+  font-weight: var(--fw-bold);
+  color: var(--color-primary);
+  min-width: 56px;
+}
+
+/* --- Add / Remove buttons (de-emphasized vs primary green) --- */
+.btn-add {
+  background-color: transparent;
+  color: var(--color-primary);
+  border: 1px dashed var(--color-primary);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--fs-small);
+}
+.btn-add:hover {
+  background-color: transparent;
+  border-color: var(--color-primary-hover);
+  color: var(--color-primary-hover);
+}
+
+.btn-remove {
+  background-color: transparent;
+  color: var(--color-error);
+  border: 1px solid var(--color-border);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--fs-small);
+  flex-shrink: 0;
+}
+.btn-remove:hover {
+  background-color: var(--color-error);
+  color: #fff;
+  border-color: var(--color-error);
+}
+
+.new-recipe__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 560px) {
+  .row { flex-wrap: wrap; }
+  .row--ingredient .row__name,
+  .row--ingredient .row__qty,
+  .row--instruction .row__desc { flex: 1 1 100%; }
+}

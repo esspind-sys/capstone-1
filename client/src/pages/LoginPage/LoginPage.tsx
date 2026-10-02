@@ -1,8 +1,9 @@
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import userService from "../../utils/userService";
+import "./LoginPage.css";
 
 type State = {
   email: string;
@@ -34,28 +35,47 @@ export default function LoginPage({ handleSignUpOrLogin }: LoginPageProps) {
   }
 
   return (
-    <div className="login-page">
-      <h2>Log In</h2>
-      <form autoComplete="off" onSubmit={handleSubmit}>
-        <input
-          type="email"
-          name="email"
-          placeholder="email"
-          value={state.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="password"
-          value={state.password}
-          onChange={handleChange}
-          required
-        />
-        <button type="submit">Log In</button>
-        {error ? <ErrorMessage message={error} /> : null}
-      </form>
+    <div className="auth-page">
+      <div className="auth-card">
+        <h2 className="auth-title">Welcome Back</h2>
+        <p className="auth-subtitle">Log in to your account to continue.</p>
+
+        <form className="auth-form" autoComplete="off" onSubmit={handleSubmit}>
+          <label className="auth-field">
+            <span className="auth-label">Email</span>
+            <input
+              type="email"
+              name="email"
+              placeholder="you@example.com"
+              value={state.email}
+              onChange={handleChange}
+              required
+            />
+          </label>
+
+          <label className="auth-field">
+            <span className="auth-label">Password</span>
+            <input
+              type="password"
+              name="password"
+              placeholder="Enter your password"
+              value={state.password}
+              onChange={handleChange}
+              required
+            />
+          </label>
+
+          <button type="submit" className="auth-submit">
+            Log In
+          </button>
+
+          {error ? <ErrorMessage message={error} /> : null}
+        </form>
+
+        <p className="auth-switch">
+          Don’t have an account? <Link to="/signup">Create one</Link>
+        </p>
+      </div>
     </div>
   );
 }

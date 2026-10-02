@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
-import { createRecipe } from "../../utils/recipeService";
+import { createRecipe, getRecipe, updateRecipe } from "../../utils/recipeService";
+import "./NewRecipePage.css";
 
 export default function NewRecipePage() {
+  const { id } = useParams();
+  const isEditMode = Boolean(id);
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
@@ -14,6 +18,39 @@ export default function NewRecipePage() {
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
+
+  // Edit mode: load the existing recipe and prefill the form.
+  useEffect(() => {
+    if (!id) return;
+    async function loadRecipe() {
+      try {
+        const recipe = await getRecipe(id as string);
+        setTitle(recipe.title);
+        setDescription(recipe.description ?? "");
+        setImage(recipe.image ?? "");
+        setTags(recipe.tags.join(", "));
+        setIngredients(
+          recipe.ingredients.length > 0
+            ? recipe.ingredients.map((i) => ({
+                name: i.name,
+                quantity: i.quantity,
+              }))
+            : [{ name: "", quantity: "" }],
+        );
+        setInstructions(
+          recipe.instructions.length > 0
+            ? recipe.instructions
+                .slice()
+                .sort((a, b) => a.step - b.step)
+                .map((i) => ({ description: i.description }))
+            : [{ description: "" }],
+        );
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Could not load recipe.");
+      }
+    }
+    loadRecipe();
+  }, [id]);
 
   function updateIngredient(
     index: number,
@@ -49,104 +86,155 @@ export default function NewRecipePage() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    const payload = {
+      title,
+      description: description || undefined,
+      image: image || undefined,
+      ingredients: ingredients.filter((i) => i.name.trim() !== ""),
+      instructions: instructions
+        .filter((i) => i.description.trim() !== "")
+        .map((i, idx) => ({ step: idx + 1, description: i.description })),
+      tags: tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter((t) => t !== ""),
+    };
+
     try {
-      await createRecipe({
-        title,
-        description: description || undefined,
-        image: image || undefined,
-        ingredients: ingredients.filter((i) => i.name.trim() !== ""),
-        instructions: instructions
-          .filter((i) => i.description.trim() !== "")
-          .map((i, idx) => ({ step: idx + 1, description: i.description })),
-        tags: tags
-          .split(",")
-          .map((t) => t.trim())
-          .filter((t) => t !== ""),
-      });
-      navigate("/recipes");
+      if (isEditMode && id) {
+        await updateRecipe(id, payload);
+        navigate(`/recipes/${id}`);
+      } else {
+        await createRecipe(payload);
+        navigate("/recipes");
+      }
     } catch (err) {
-      console.log("Real create error:", err);
-      setError(err instanceof Error ? err.message : "Could not create recipe.");
+      console.log("Real save error:", err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : `Could not ${isEditMode ? "update" : "create"} recipe.`,
+      );
     }
   }
 
   return (
     <div className="new-recipe-page">
-      <h2>New Recipe</h2>
-      <form autoComplete="off" onSubmit={handleSubmit}>
-        <input
-          name="title"
-          placeholder="Title"
-          value={title}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setTitle(e.target.value)
-          }
-          required
-        />
-        <textarea
-          name="description"
-          placeholder="Description (optional)"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-        <input
-          name="image"
-          placeholder="Image URL (optional)"
-          value={image}
-          onChange={(e) => setImage(e.target.value)}
-        />
+      <h2 className="new-recipe__title">
+        {isEditMode ? "Edit Recipe" : "New Recipe"}
+      </h2>
 
-        <h3>Ingredients</h3>
-        {ingredients.map((ing, i) => (
-          <div key={i}>
-            <input
-              placeholder="name"
-              value={ing.name}
-              onChange={(e) => updateIngredient(i, "name", e.target.value)}
-            />
-            <input
-              placeholder="quantity"
-              value={ing.quantity}
-              onChange={(e) => updateIngredient(i, "quantity", e.target.value)}
-            />
-            <button type="button" onClick={() => removeIngredient(i)}>
-              Remove
-            </button>
-          </div>
-        ))}
-        <button type="button" onClick={addIngredient}>
-          + Add Ingredient
-        </button>
+      <form className="new-recipe__form" autoComplete="off" onSubmit={handleSubmit}>
+        <label className="field">
+          <span className="field__label">Title</span>
+          <input
+            name="title"
+            placeholder="e.g. Spicy Chickpea Soup"
+            value={title}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setTitle(e.target.value)
+            }
+            required
+          />
+        </label>
 
-        <h3>Instructions</h3>
-        {instructions.map((inst, i) => (
-          <div key={i}>
-            <span>Step {i + 1}: </span>
-            <input
-              placeholder="description"
-              value={inst.description}
-              onChange={(e) => updateInstruction(i, e.target.value)}
-            />
-            <button type="button" onClick={() => removeInstruction(i)}>
-              Remove
-            </button>
-          </div>
-        ))}
-        <button type="button" onClick={addInstruction}>
-          + Add Step
-        </button>
+        <label className="field">
+          <span className="field__label">Description</span>
+          <textarea
+            name="description"
+            placeholder="A short description (optional)"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={3}
+          />
+        </label>
 
-        <h3>Tags</h3>
-        <input
-          name="tags"
-          placeholder="comma, separated, tags"
-          value={tags}
-          onChange={(e) => setTags(e.target.value)}
-        />
+        <label className="field">
+          <span className="field__label">Image URL</span>
+          <input
+            name="image"
+            placeholder="https://… (optional)"
+            value={image}
+            onChange={(e) => setImage(e.target.value)}
+          />
+          {image ? (
+            <img className="new-recipe__preview" src={image} alt="Preview" />
+          ) : null}
+        </label>
 
-        <div>
-          <button type="submit">Create Recipe</button>
+        <section className="new-recipe__section">
+          <h3>Ingredients</h3>
+          {ingredients.map((ing, i) => (
+            <div key={i} className="row row--ingredient">
+              <input
+                className="row__name"
+                placeholder="Name (e.g. Chickpeas)"
+                value={ing.name}
+                onChange={(e) => updateIngredient(i, "name", e.target.value)}
+              />
+              <input
+                className="row__qty"
+                placeholder="Quantity (e.g. 1 cup)"
+                value={ing.quantity}
+                onChange={(e) => updateIngredient(i, "quantity", e.target.value)}
+              />
+              <button
+                type="button"
+                className="btn-remove"
+                onClick={() => removeIngredient(i)}
+                aria-label="Remove ingredient"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button type="button" className="btn-add" onClick={addIngredient}>
+            + Add Ingredient
+          </button>
+        </section>
+
+        <section className="new-recipe__section">
+          <h3>Instructions</h3>
+          {instructions.map((inst, i) => (
+            <div key={i} className="row row--instruction">
+              <span className="row__step">Step {i + 1}</span>
+              <input
+                className="row__desc"
+                placeholder="Describe this step"
+                value={inst.description}
+                onChange={(e) => updateInstruction(i, e.target.value)}
+              />
+              <button
+                type="button"
+                className="btn-remove"
+                onClick={() => removeInstruction(i)}
+                aria-label="Remove step"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button type="button" className="btn-add" onClick={addInstruction}>
+            + Add Step
+          </button>
+        </section>
+
+        <label className="field">
+          <span className="field__label">Tags</span>
+          <input
+            name="tags"
+            placeholder="comma, separated, tags"
+            value={tags}
+            onChange={(e) => setTags(e.target.value)}
+          />
+        </label>
+
+        <div className="new-recipe__actions">
+          <button type="submit">
+            {isEditMode ? "Save Changes" : "Create Recipe"}
+          </button>
         </div>
+
         {error ? <ErrorMessage message={error} /> : null}
       </form>
     </div>

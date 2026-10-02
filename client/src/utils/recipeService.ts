@@ -30,3 +30,21 @@ export async function createRecipe(recipe: NewRecipeData): Promise<Recipe> {
   });
   return res.data;
 }
+
+export async function updateRecipe(
+  id: string,
+  recipe: NewRecipeData,
+): Promise<Recipe> {
+  const token = tokenService.getToken();
+  const res = await axios.put<Recipe>(`${BASE_URL}/${id}`, recipe, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.data;
+}
+
+export async function deleteRecipe(id: string): Promise<void> {
+  const token = tokenService.getToken();
+  await axios.delete(`${BASE_URL}/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}

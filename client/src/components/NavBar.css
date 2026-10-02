@@ -1,0 +1,102 @@
+.navbar {
+  width: 100%;
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-3) var(--space-5);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+}
+
+/* --- Brand wordmark (top-left corner) --- */
+.navbar__brand {
+  font-family: var(--font-heading);
+  font-weight: var(--fw-bold);
+  font-size: 24px;
+  color: var(--color-primary);
+  text-decoration: none;
+  letter-spacing: -0.5px;
+  white-space: nowrap;
+}
+.navbar__brand:hover {
+  color: var(--color-primary-hover);
+  text-decoration: none;
+}
+
+/* --- Link group (right side) --- */
+.navbar__links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.navbar__link {
+  font-family: var(--font-body);
+  font-weight: var(--fw-regular);
+  font-size: var(--fs-body);
+  color: var(--color-text);
+  text-decoration: none;
+  padding: var(--space-2) 0;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.navbar__link:hover {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+  text-decoration: none;
+}
+
+.navbar__link--muted {
+  color: var(--color-text-muted);
+}
+
+/* --- "Welcome, email" greeting --- */
+.navbar__welcome {
+  color: var(--color-text-muted);
+  font-size: var(--fs-small);
+  white-space: nowrap;
+}
+
+/* --- Primary call-to-action (Log In / New Recipe) --- */
+.navbar__cta {
+  background-color: var(--color-primary);
+  color: #fff;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  border-bottom: none;
+}
+.navbar__cta:hover {
+  background-color: var(--color-primary-hover);
+  color: #fff;
+  border-bottom: none;
+}
+
+/* --- Responsive: stack on narrow screens --- */
+@media (max-width: 640px) {
+  .navbar__inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+  .navbar__links {
+    width: 100%;
+  }
+  .navbar__welcome {
+    width: 100%;
+    order: -1; /* show greeting above links on mobile */
+  }
+}
+

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
+import "./App.css";
 import NavBar from "./components/NavBar";
+import HomePage from "./pages/HomePage/HomePage";
 import RecipeList from "./pages/RecipeList/RecipeList";
 import NewRecipePage from "./pages/NewRecipePage/NewRecipePage";
 import RecipeDetailPage from "./pages/RecipeDetailPage/RecipeDetailPage";
@@ -26,10 +28,11 @@ function App() {
     <>
       <NavBar user={user} handleLogout={handleLogout} />
       <Routes>
-        <Route path="/" element={<h1>Spoonful</h1>} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/recipes" element={<RecipeList />} />
         <Route path="/recipes/new" element={<NewRecipePage />} />
-        <Route path="/recipes/:id" element={<RecipeDetailPage />} />
+        <Route path="/recipes/:id/edit" element={<NewRecipePage />} />
+        <Route path="/recipes/:id" element={<RecipeDetailPage user={user} />} />
         <Route path="/generate" element={<GenerateRecipePage />} />
         <Route
           path="/signup"
